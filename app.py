@@ -11,37 +11,17 @@ from explain.shap_engine import generate_shap_plot
 
 app = Flask(__name__)
 
-# =========================
-# LOAD DATASET
-# =========================
-
 df = pd.read_csv("preprocessed_loan_data.csv")
 
 X = df.drop("Loan_Status", axis=1)
 
-# =========================
-# LOAD TRAINED MODEL
-# =========================
-
 model = joblib.load("best_model.pkl")
 
-# =========================
-# CREATE SHAP EXPLAINER
-# =========================
-
 explainer = shap.Explainer(model, X)
-
-# =========================
-# HOME PAGE
-# =========================
 
 @app.route("/")
 def home():
     return render_template("index.html")
-
-# =========================
-# DASHBOARD PAGE
-# =========================
 
 @app.route("/dashboard")
 def dashboard():
@@ -79,16 +59,8 @@ def dashboard():
         
     return render_template("dashboard.html", stats=stats, activity=recent_activity)
 
-# =========================
-# PREDICTION ROUTE
-# =========================
-
 @app.route("/predict", methods=["POST"])
 def predict():
-
-    # =====================
-    # GET USER INPUT
-    # =====================
 
     data = {
 
@@ -106,15 +78,7 @@ def predict():
 
     }
 
-    # =====================
-    # CONVERT TO DATAFRAME
-    # =====================
-
     input_df = pd.DataFrame([data])
-
-    # =====================
-    # MAKE PREDICTION
-    # =====================
 
     prediction = model.predict(input_df)[0]
     prediction_proba = model.predict_proba(input_df)[0]
@@ -122,31 +86,15 @@ def predict():
     
     result = "APPROVED" if prediction == 1 else "REJECTED"
 
-    # =====================
-    # SHAP VALUES
-    # =====================
-
     shap_values = explainer(input_df)
 
-    # =====================
-    # GENERATE SHAP GRAPH
-    # =====================
-
     generate_shap_plot(shap_values)
-
-    # =====================
-    # NLP EXPLANATION
-    # =====================
 
     explanation_data = generate_explanation(
         shap_values,
         X.columns,
         prediction_result=result
     )
-
-    # =====================
-    # SAVE TO DATABASE
-    # =====================
 
     try:
         conn = sqlite3.connect("explainx.db")
@@ -167,21 +115,12 @@ def predict():
     except Exception as e:
         print("Database error:", e)
 
-    # =====================
-    # SEND TO RESULT PAGE
-    # =====================
-
-    # =====================
-    # PREPARE DATA FOR CHARTS
-    # =====================
     shap_data = []
     for feature, value in zip(X.columns, shap_values.values[0]):
         shap_data.append({
             "feature": feature,
             "impact": round(float(value), 4)
         })
-    
-    # Sort by absolute impact for better visualization
     shap_data.sort(key=lambda x: abs(x["impact"]), reverse=True)
 
     return render_template(
@@ -228,25 +167,14 @@ def clear_history():
     
     return history()
 
-# =========================
-# METRICS PAGE
-# =========================
-
 @app.route("/metrics")
 def metrics():
     return render_template("metrics.html")
-
-# =========================
-# SETTINGS PAGE
-# =========================
 
 @app.route("/settings")
 def settings():
     return render_template("settings.html")
 
-# =========================
-# RUN APP
-# =========================
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
