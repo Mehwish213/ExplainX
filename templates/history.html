@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}ExplainX | Prediction History{% endblock %}
+{% block nav_history %}active{% endblock %}
+{% block page_title %}Prediction History{% endblock %}
+
+{% block extra_css %}
+.table-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    width: 100%;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.history-table th, .history-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.875rem;
+}
+
+.history-table th {
+    background-color: #f9fafb;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+}
+
+.history-table tr:hover {
+    background-color: #f3f4f6;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.status-badge.approved {
+    background-color: var(--success-bg);
+    color: var(--success-color);
+}
+
+.status-badge.rejected {
+    background-color: var(--danger-bg);
+    color: var(--danger-color);
+}
+
+.empty-state {
+    padding: 3rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3 style="color: var(--text-main); font-weight: 700;">Recent Predictions</h3>
+    {% if predictions %}
+    <form action="/clear_history" method="POST" onsubmit="return confirm('Are you sure you want to delete all history? This action cannot be undone.');">
+        <button type="submit" style="background-color: #fee2e2; color: #ef4444; border: 1px solid #fecaca; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            Clear All History
+        </button>
+    </form>
+    {% endif %}
+</div>
+
+<div class="table-container">
+    {% if predictions %}
+    <table class="history-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Income ($)</th>
+                <th>Loan Amt ($k)</th>
+                <th>Credit History</th>
+                <th>Decision</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in predictions %}
+            <tr>
+                <td>#{{ row.id }}</td>
+                <td>{{ row.created_at }}</td>
+                <td>{{ row.applicant_income }}</td>
+                <td>{{ row.loan_amount }}</td>
+                <td>{{ "Good" if row.credit_history == 1.0 else "Bad" }}</td>
+                <td>
+                    <span class="status-badge {{ row.prediction | lower }}">{{ row.prediction }}</span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 1rem; opacity: 0.5;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        <h3>No History Found</h3>
+        <p>Run a new analysis to populate this table.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

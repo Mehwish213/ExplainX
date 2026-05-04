@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}ExplainX | Model Metrics{% endblock %}
+{% block nav_metrics %}active{% endblock %}
+{% block page_title %}Model Performance Metrics{% endblock %}
+
+{% block extra_css %}
+.metrics-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.metric-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.metric-header {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.progress-bar-container {
+    margin-bottom: 1.5rem;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+}
+
+.progress-bar {
+    height: 8px;
+    background-color: var(--bg-color);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 999px;
+}
+
+.confusion-matrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.matrix-box {
+    padding: 1rem;
+    border-radius: 4px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+}
+
+.matrix-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin-top: 0.25rem;
+    opacity: 0.8;
+}
+
+.true-positive { background-color: #d1fae5; color: #065f46; }
+.true-negative { background-color: #d1fae5; color: #065f46; }
+.false-positive { background-color: #fee2e2; color: #991b1b; }
+.false-negative { background-color: #fee2e2; color: #991b1b; }
+{% endblock %}
+
+{% block content %}
+<div class="metrics-container">
+    <div class="metric-card">
+        <div class="metric-header">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            Classification Metrics
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-label"><span>Accuracy</span> <span style="color: var(--text-main); font-weight: 700;">81.2%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width: 81.2%;"></div></div>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-label"><span>Precision</span> <span style="color: var(--text-main); font-weight: 700;">78.5%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width: 78.5%; background-color: #8b5cf6;"></div></div>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-label"><span>Recall</span> <span style="color: var(--text-main); font-weight: 700;">84.1%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width: 84.1%; background-color: #10b981;"></div></div>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-label"><span>F1-Score</span> <span style="color: var(--text-main); font-weight: 700;">81.2%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width: 81.2%; background-color: #f59e0b;"></div></div>
+        </div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+            Confusion Matrix
+        </div>
+        
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem;">Based on out-of-sample validation set (N=123)</p>
+        
+        <div class="confusion-matrix">
+            <div class="matrix-box true-positive">
+                85
+                <span class="matrix-label">True Positive</span>
+            </div>
+            <div class="matrix-box false-positive">
+                12
+                <span class="matrix-label">False Positive</span>
+            </div>
+            <div class="matrix-box false-negative">
+                11
+                <span class="matrix-label">False Negative</span>
+            </div>
+            <div class="matrix-box true-negative">
+                15
+                <span class="matrix-label">True Negative</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

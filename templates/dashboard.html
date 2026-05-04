@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | ExplainX{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_css %}
+/* KPI Cards row layout */
+.top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.5fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.kpi-card {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.kpi-icon {
+    width: 48px;
+    height: 48px;
+    background-color: var(--sidebar-active-bg);
+    color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kpi-icon.lime {
+    background-color: #d9f99d;
+    color: #4d7c0f;
+}
+
+.kpi-content {
+    flex: 1;
+}
+
+.kpi-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.kpi-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.kpi-trend {
+    font-size: 0.75rem;
+    color: var(--success-color);
+}
+
+.kpi-chart {
+    width: 60px;
+    height: 30px;
+}
+
+/* Dark Green Wallet Card (System Status) */
+.dark-card {
+    background-color: var(--primary-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    color: white;
+    box-shadow: 0 10px 20px -5px rgba(6, 78, 59, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.dark-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><path d="M0 100 Q 50 50 100 0 L 100 100 Z" fill="rgba(255,255,255,0.05)"/></svg>') no-repeat bottom right;
+    background-size: cover;
+    pointer-events: none;
+}
+
+.dark-card-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.dark-card-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.dark-card-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    position: relative;
+    z-index: 1;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 0.5rem;
+}
+
+.stat-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+.stat-row .dot {
+    display: inline-block;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent-color);
+    margin-right: 0.5rem;
+}
+.stat-row .dot.white { background: white; }
+.stat-row .dot.gray { background: rgba(255,255,255,0.5); }
+
+/* Main Grid */
+.main-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Charts Placeholder */
+.chart-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.chart-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e1;
+}
+
+/* Transactions Table */
+.table-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    margin-top: 1.5rem;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.custom-table th {
+    text-align: left;
+    padding: 1rem 0;
+    color: var(--text-muted);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.custom-table td {
+    padding: 1rem 0;
+    color: var(--text-main);
+    border-bottom: 1px solid #f8fafc;
+    font-weight: 500;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+.status-dot.completed { background: var(--success-color); }
+.status-dot.pending { background: #fcd34d; }
+.status-dot.progress { background: var(--text-main); }
+{% endblock %}
+
+{% block content %}
+<div class="top-row">
+    <!-- Total Processed -->
+    <div class="kpi-card">
+        <div class="kpi-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        </div>
+        <div class="kpi-content">
+            <div class="kpi-title">Total Analyzed</div>
+            <div class="kpi-value">
+                {{ stats.total }}
+            </div>
+        </div>
+        <svg class="kpi-chart" viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 25 C10 25, 20 15, 30 15 C40 15, 50 5, 60 5" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </div>
+
+    <!-- Approval Rate -->
+    <div class="kpi-card">
+        <div class="kpi-icon lime">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <div class="kpi-content">
+            <div class="kpi-title">Approval Rate</div>
+            <div class="kpi-value">
+                {{ stats.approval_rate }}%
+            </div>
+        </div>
+        <svg class="kpi-chart" viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 25 C10 25, 20 15, 30 15 C40 15, 50 5, 60 5" stroke="#84cc16" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </div>
+
+    <!-- System Status -->
+    <div class="dark-card">
+        <div class="dark-card-title">
+            Decision Split
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+        </div>
+        <div class="dark-card-value">{{ stats.approved }} / {{ stats.total }}</div>
+        
+        <div class="dark-card-stats">
+            <div class="stat-row">
+                <span><span class="dot"></span> Approved</span>
+                <span>{{ stats.approved }}</span>
+            </div>
+            <div class="stat-row">
+                <span><span class="dot white"></span> Rejected</span>
+                <span>{{ stats.rejected }}</span>
+            </div>
+            <div class="stat-row">
+                <span><span class="dot gray"></span> Total Dataset</span>
+                <span>{{ stats.total }} Records</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main-grid">
+    <!-- Chart 1 -->
+    <div class="chart-card">
+        <div class="chart-header">
+            Model Performance Trend
+        </div>
+        <div class="chart-body">
+            <canvas id="performanceChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart 2 -->
+    <div class="chart-card">
+        <div class="chart-header">
+            Decision Composition
+        </div>
+        <div class="chart-body">
+            <canvas id="splitChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="table-card">
+    <div class="table-header">
+        Latest Analysis Activity
+    </div>
+    {% if activity %}
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Applicant ID</th>
+                <th>Loan Amount</th>
+                <th>Decision</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in activity %}
+            <tr>
+                <td style="color:var(--text-muted)">{{ row.created_at }}</td>
+                <td>Applicant #{{ row.id }}</td>
+                <td>${{ row.loan_amount }}k</td>
+                <td>
+                    <span class="status-dot {{ 'completed' if row.prediction == 'APPROVED' else 'pending' }}"></span>
+                    {{ row.prediction }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+        No recent activity. Run a new analysis to see results here.
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Performance Trend (Mock data for trend, but using real count)
+    const ctxPerf = document.getElementById('performanceChart').getContext('2d');
+    new Chart(ctxPerf, {
+        type: 'line',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            datasets: [{
+                label: 'Analyses',
+                data: [0, 0, 0, {{ stats.total }}],
+                borderColor: '#064e3b',
+                tension: 0.4,
+                fill: true,
+                backgroundColor: 'rgba(6, 78, 59, 0.05)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // Decision Split Donut
+    const ctxSplit = document.getElementById('splitChart').getContext('2d');
+    new Chart(ctxSplit, {
+        type: 'doughnut',
+        data: {
+            labels: ['Approved', 'Rejected'],
+            datasets: [{
+                data: [{{ stats.approved }}, {{ stats.rejected }}],
+                backgroundColor: ['#10b981', '#ef4444'],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+</script>
+{% endblock %}

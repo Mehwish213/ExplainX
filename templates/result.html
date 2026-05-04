@@ -1,0 +1,392 @@
+{% extends "base.html" %}
+
+{% block title %}ExplainX | Analysis Report{% endblock %}
+{% block nav_predict %}active{% endblock %}
+{% block page_title %}Analysis Report{% endblock %}
+
+{% block extra_css %}
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.back-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.back-link:hover {
+    color: var(--primary-hover);
+    transform: translateX(-2px);
+}
+
+.soft-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: #f9fafb;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Status Banner */
+.status-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+}
+
+.status-info h2 {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.status-info .status-value {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.status-value.approved { color: #10b981; }
+.status-value.rejected { color: #ef4444; }
+
+.confidence-meter {
+    text-align: right;
+}
+
+.confidence-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.confidence-bar-bg {
+    width: 200px;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.confidence-bar-fill {
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 4px;
+    transition: width 1s ease-out;
+}
+
+/* Grid Layout */
+.content-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 1.5rem;
+}
+
+.secondary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Chart Styles */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* SHAP Plot */
+.shap-container {
+    text-align: center;
+    padding: 1rem;
+    background: #fdfdfd;
+    border-radius: 12px;
+}
+
+.shap-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    mix-blend-mode: multiply;
+}
+
+/* NLP Explanation */
+.explanation-box {
+    background-color: #f0f7ff;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.explanation-summary {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1e3a8a;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+.explanation-text {
+    font-size: 0.9rem;
+    color: #3b82f6;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.tag {
+    background: white;
+    color: var(--primary-color);
+    padding: 0.375rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid #dbeafe;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+@media (max-width: 1024px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="header-actions">
+        <a href="/history" class="back-link">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            View History
+        </a>
+        <a href="/" class="back-link">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            New Analysis
+        </a>
+    </div>
+
+    <!-- Top Status Card -->
+    <div class="status-banner">
+        <div class="status-info">
+            <h2>Loan Status Prediction</h2>
+            <div class="status-value {{ prediction | lower }}">
+                {{ prediction }}
+            </div>
+        </div>
+        <div style="display: flex; gap: 2rem; align-items: center;">
+            <div class="confidence-meter">
+                <div class="confidence-label">Prediction Certainty: <strong>{{ confidence }}%</strong></div>
+                <div class="confidence-bar-bg">
+                    <div class="confidence-bar-fill" style="width: {{ confidence }}%"></div>
+                </div>
+            </div>
+            <div class="confidence-meter" style="border-left: 1px solid var(--border-color); padding-left: 2rem;">
+                <div class="confidence-label">Model Accuracy (Global): <strong>81.2%</strong></div>
+                <div class="confidence-bar-bg">
+                    <div class="confidence-bar-fill" style="width: 81.2%; background-color: #8b5cf6;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <!-- Interactive Analysis -->
+        <div class="soft-card">
+            <div class="card-header">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                Key Drivers Analysis
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="impactChart"></canvas>
+                </div>
+                <p class="plot-caption" style="margin-top: 1.5rem;">
+                    This chart shows which factors most heavily influenced the AI's decision. 
+                    <span style="color: #ef4444; font-weight: 600;">Positive</span> values support approval, 
+                    <span style="color: #3b82f6; font-weight: 600;">Negative</span> values lean towards rejection.
+                </p>
+            </div>
+        </div>
+
+        <!-- Reason & Coaching Analysis -->
+        <div class="soft-card">
+            <div class="card-header">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Decision Analysis & Recommendations
+            </div>
+            <div class="card-body">
+                <!-- Reason Section -->
+                <div class="explanation-box" style="background-color: {% if prediction == 'REJECTED' %}#fef2f2{% else %}#f0fdf4{% endif %}; border-left: 4px solid {% if prediction == 'REJECTED' %}#ef4444{% else %}#10b981{% endif %};">
+                    <h5 style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; letter-spacing: 0.05em;">Reason</h5>
+                    <div class="explanation-text" style="color: {% if prediction == 'REJECTED' %}#7f1d1d{% else %}#15803d{% endif %}; font-size: 0.95rem; opacity: 1;">
+                        {{ reason }}
+                    </div>
+                </div>
+
+                <!-- User Coaching Section -->
+                <div style="margin-top: 1.5rem;">
+                    <h5 style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem; letter-spacing: 0.05em;">💡 User Coaching & Action Steps</h5>
+                    <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                        {% for tip in coaching %}
+                        <li style="background: white; padding: 0.75rem 1rem; border-radius: 8px; border-left: 3px solid var(--primary-color); font-size: 0.9rem; color: var(--text-main);">
+                            {{ tip }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- NLP Analysis -->
+                <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
+                    <h5 style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; letter-spacing: 0.05em;">Detailed Analysis</h5>
+                    <div class="explanation-text" style="color: #3b82f6; font-size: 0.9rem; opacity: 0.9;">
+                        {{ full_text }}
+                    </div>
+                    
+                    <h4 style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-top: 1rem; margin-bottom: 0.5rem; letter-spacing: 0.05em;">Critical Factors</h4>
+                    <div class="tags-container">
+                        {% for word in keywords[:8] %}
+                        <span class="tag">{{ word }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secondary Visualizations -->
+    <div class="secondary-grid">
+        <div class="soft-card">
+            <div class="card-header">Detailed Feature Impact (SHAP)</div>
+            <div class="card-body">
+                <div class="shap-container">
+                    <img src="{{ url_for('static', filename='shap/shap_plot.png') }}?v={{ range(1, 9999) | random }}" alt="SHAP Waterfall Plot">
+                </div>
+            </div>
+        </div>
+        <div class="soft-card">
+            <div class="card-header">Decision Composition</div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="compositionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const shapData = {{ shap_data | tojson }};
+    
+    // Impact Chart (Horizontal Bar)
+    const ctxImpact = document.getElementById('impactChart').getContext('2d');
+    new Chart(ctxImpact, {
+        type: 'bar',
+        data: {
+            labels: shapData.map(d => d.feature),
+            datasets: [{
+                label: 'Impact Score',
+                data: shapData.map(d => d.impact),
+                backgroundColor: shapData.map(d => d.impact > 0 ? '#10b981' : '#ef4444'),
+                borderRadius: 6,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    title: { display: true, text: 'Influence Strength' }
+                },
+                y: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // Composition Chart (Polar Area / Radar)
+    const ctxComp = document.getElementById('compositionChart').getContext('2d');
+    new Chart(ctxComp, {
+        type: 'polarArea',
+        data: {
+            labels: shapData.slice(0, 5).map(d => d.feature),
+            datasets: [{
+                data: shapData.slice(0, 5).map(d => Math.abs(d.impact)),
+                backgroundColor: [
+                    'rgba(59, 130, 246, 0.6)',
+                    'rgba(16, 185, 129, 0.6)',
+                    'rgba(245, 158, 11, 0.6)',
+                    'rgba(239, 68, 68, 0.6)',
+                    'rgba(139, 92, 246, 0.6)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right' }
+            },
+            scales: {
+                r: {
+                    ticks: { display: false }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
+

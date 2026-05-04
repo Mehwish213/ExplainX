@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}ExplainX | Settings{% endblock %}
+{% block nav_settings %}active{% endblock %}
+{% block page_title %}System Settings{% endblock %}
+
+{% block extra_css %}
+.settings-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.settings-section {
+    padding: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.settings-section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+.section-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.setting-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.setting-info h4 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.setting-info p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Toggle Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-section">
+        <h3 class="section-title">General Settings</h3>
+        <p class="section-desc">Manage basic application preferences.</p>
+        
+        <div class="setting-row">
+            <div class="setting-info">
+                <h4>Maintenance Mode</h4>
+                <p>Prevent new analyses while updating the model.</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label>
+        </div>
+        
+        <div class="setting-row">
+            <div class="setting-info">
+                <h4>Verbose Logging</h4>
+                <p>Save detailed SHAP values in the database for each prediction.</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="settings-section">
+        <h3 class="section-title">Model Configuration</h3>
+        <p class="section-desc">Parameters for the local ML explainer.</p>
+        
+        <div class="setting-row">
+            <div class="setting-info">
+                <h4>Active Model Path</h4>
+                <p>Location of the current PKL file.</p>
+            </div>
+            <div style="font-family: monospace; font-size: 0.875rem; background: #f3f4f6; padding: 0.5rem; border-radius: 4px;">
+                ./best_model.pkl
+            </div>
+        </div>
+        
+        <div class="setting-row">
+            <div class="setting-info">
+                <h4>SHAP Background Samples</h4>
+                <p>Number of samples to use for background distribution.</p>
+            </div>
+            <select style="padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border-color);">
+                <option>100</option>
+                <option selected>500</option>
+                <option>1000</option>
+            </select>
+        </div>
+    </div>
+</div>
+{% endblock %}

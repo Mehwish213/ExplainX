@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}ExplainX | New Analysis{% endblock %}
+{% block nav_predict %}active{% endblock %}
+{% block page_title %}New Loan Analysis{% endblock %}
+
+{% block extra_css %}
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+
+.header {
+    padding: 2rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: #f9fafb;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.header p {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.form-content {
+    padding: 2rem;
+}
+
+form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.form-group.full-width {
+    grid-column: span 2;
+}
+
+label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+input, select {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.875rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.form-actions {
+    grid-column: span 2;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+}
+
+@media (max-width: 640px) {
+    form {
+        grid-template-columns: 1fr;
+    }
+    .form-group.full-width {
+        grid-column: span 1;
+    }
+    .form-actions {
+        grid-column: span 1;
+    }
+}
+{% endblock %}
+
+{% block content %}
+<div class="form-container soft-card">
+    <div class="header">
+        <h1>Loan Application Analysis</h1>
+        <p>Enter the applicant's details below to evaluate eligibility using our ML model.</p>
+    </div>
+    
+    <div class="form-content">
+        <form action="/predict" method="POST">
+            <div class="form-group">
+                <label for="Gender">Gender</label>
+                <select name="Gender" id="Gender">
+                    <option value="1">Male</option>
+                    <option value="0">Female</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="Married">Marital Status</label>
+                <select name="Married" id="Married">
+                    <option value="1">Married</option>
+                    <option value="0">Single</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="Dependents">Dependents</label>
+                <select name="Dependents" id="Dependents">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3+</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="Education">Education Level</label>
+                <select name="Education" id="Education">
+                    <option value="1">Graduate</option>
+                    <option value="0">Not Graduate</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="Self_Employed">Self Employed</label>
+                <select name="Self_Employed" id="Self_Employed">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="Credit_History">Credit History</label>
+                <select name="Credit_History" id="Credit_History">
+                    <option value="1.0">Good (Meets Guidelines)</option>
+                    <option value="0.0">Bad (Does Not Meet)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="Property_Area">Property Area</label>
+                <select name="Property_Area" id="Property_Area">
+                    <option value="0">Rural</option>
+                    <option value="1">Semiurban</option>
+                    <option value="2">Urban</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ApplicantIncome">Applicant Income ($)</label>
+                <input type="number" name="ApplicantIncome" id="ApplicantIncome" value="5000" step="0.1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="CoapplicantIncome">Coapplicant Income ($)</label>
+                <input type="number" name="CoapplicantIncome" id="CoapplicantIncome" value="0" step="0.1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="LoanAmount">Loan Amount ($ Thousands)</label>
+                <input type="number" name="LoanAmount" id="LoanAmount" value="150" step="0.1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="Loan_Amount_Term">Loan Term (Days)</label>
+                <input type="number" name="Loan_Amount_Term" id="Loan_Amount_Term" value="360" step="0.1" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Run Analysis</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
