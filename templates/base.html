@@ -275,6 +275,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.03);
             padding: 1.5rem;
         }
+        
 
         {% block extra_css %}{% endblock %}
     </style>
@@ -284,7 +285,7 @@
         <aside class="sidebar">
             <div class="brand">
                 <div class="brand-icon"></div>
-                ExplainX ML
+                ExplainX 
             </div>
             <nav class="nav-menu">
                 <a href="/dashboard" class="nav-item {% block nav_dashboard %}{% endblock %}">
@@ -309,12 +310,6 @@
                 </a>
             </nav>
 
-            <div class="sidebar-cta">
-                <!-- Decorative SVG behind text -->
-                <svg style="position:absolute; right:-10px; bottom:-10px; opacity:0.2; width:80px; height:80px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
-                <h4>Manage<br>Models</h4>
-                <a href="/settings" class="sidebar-cta-btn">Start</a>
-            </div>
         </aside>
 
         <main class="main-content">
@@ -328,8 +323,10 @@
                     {% block content %}{% endblock %}
                 </div>
             </div>
+            
         </main>
     </div>
     {% block extra_js %}{% endblock %}
+    
 </body>
 </html>

@@ -121,17 +121,6 @@ input:checked + .slider:before {
         
         <div class="setting-row">
             <div class="setting-info">
-                <h4>Maintenance Mode</h4>
-                <p>Prevent new analyses while updating the model.</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox">
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="setting-row">
-            <div class="setting-info">
                 <h4>Verbose Logging</h4>
                 <p>Save detailed SHAP values in the database for each prediction.</p>
             </div>
@@ -161,11 +150,7 @@ input:checked + .slider:before {
                 <h4>SHAP Background Samples</h4>
                 <p>Number of samples to use for background distribution.</p>
             </div>
-            <select style="padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border-color);">
-                <option>100</option>
-                <option selected>500</option>
-                <option>1000</option>
-            </select>
+           
         </div>
     </div>
 </div>
