@@ -1,7 +1,12 @@
-flask
+Flask
 pandas
+numpy
 joblib
 shap
 matplotlib
+seaborn
 spacy
 nltk
+scikit-learn
+xgboost
+gunicorn
